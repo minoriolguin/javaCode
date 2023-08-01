@@ -2,25 +2,27 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class PurchaseRecord{
+class PurchaseRecord {
     private String name;
     private double price;
     private int quantity;
-    private double total;
+    private double itemTotal;
+    private double purchaseTotal;
 
-
-    public PurchaseRecord(){
+    public PurchaseRecord() {
         name = "Item name";
         price = 0.0;
         quantity = 0;
-        total = price * (double)quantity;
+        itemTotal = price * (double)quantity;
+        purchaseTotal = 0.0;
     }
 
-    public PurchaseRecord(String name, double price, int quantity, double total){
+    public PurchaseRecord(String name, double price, int quantity, double itemTotal, double purchaseTotal) {
         setName(name);
         setPrice(price);
         setQuantity(quantity);
-        setTotal(price, quantity);
+        setItemTotal(price, quantity);
+        setPurchaseTotal(purchaseTotal, itemTotal);
     }
 
     public void setName(String name) {
@@ -28,27 +30,31 @@ class PurchaseRecord{
     }
 
     public void setPrice(double price) {
-        if(price > 0){
+        if(price > 0) {
             this.price = price;
         }
-        else{
+        else {
             System.out.println("price cannot be set to 0 or less, quanitity has automatically been set to $5.0.");
             this.price = 5.0;
         }
     }
 
     public void setQuantity(int quantity) {
-        if(quantity > 0){
+        if(quantity > 0) {
             this.quantity = quantity;
         }
-        else{
+        else {
             System.out.println("quantity cannot be set to 0 or less, quanitity has automatically been set to 1.");
             this.quantity = 1;
         }
     }
 
-    public void setTotal(double price, int quanitity) {
-        total = price * (double)quantity;
+    public void setItemTotal(double price, int quanitity) {
+        itemTotal = price * (double)quantity;
+    }
+
+    public void setPurchaseTotal(double purchaseTotal, double itemTotal) {
+        this.purchaseTotal = purchaseTotal + itemTotal;
     }
 
     public String getName() {
@@ -59,150 +65,152 @@ class PurchaseRecord{
         return price;
     }
 
-    public int getQuantity(){
+    public int getQuantity() {
         return quantity;
     }
 
-    public double getTotal() {
-        return total;
+    public double getItemTotal() {
+        return itemTotal;
     }
 
-    public void displayPurchase(){
-        System.out.println("\nItem: " + getName());
-        System.out.println("Price: " + getPrice());
-        System.out.println("Quantity: " + getQuantity());
-        System.out.println("Purchase total: " + getTotal() + "\n");
+    public double getPurchaseTotal() {
+        return purchaseTotal;
     }
 
     ArrayList<PurchaseRecord> purchaseRecords = new ArrayList<>();
 
-    void addPurchase(PurchaseRecord purchaseRecord){
-        purchaseRecords.add(purchaseRecord);
+    void addPurchase(PurchaseRecord record) {
+        purchaseRecords.add(record);
     }
 
-    void displayPurchaseRecords(){
-        for (PurchaseRecord purchaseRecord : purchaseRecords){
-            purchaseRecord.displayPurchase();
+    void displayPurchaseRecords() {
+        if (purchaseRecords.size() > 0) {
+            for (PurchaseRecord record : purchaseRecords) {
+                System.out.println("\nItem: " + record.getName());
+                System.out.println("Price: " + record.getPrice());
+                System.out.println("Quantity: " + record.getQuantity());
+                System.out.println("Sub Total: " + record.getItemTotal());
+            }
+            System.out.println("\nPurchase Total: " + sumItemTotals() + "\n");
+        }
+        else {
+            System.out.println("\nNo purchase records to display, download or enter in new records.");
         }
     }
 
-    void upload(){
-        String newPurchaseRecord = "";
-        for (PurchaseRecord purchaseRecord : purchaseRecords){
-            newPurchaseRecord += purchaseRecord.getName() + "\n";
-            newPurchaseRecord += purchaseRecord.getPrice() + "\n";
-            newPurchaseRecord += purchaseRecord.getQuantity() + "\n";
-            newPurchaseRecord += purchaseRecord.getTotal() + "\n";
+    public static void displayUserMenu() {
+        System.out.println("\nPress '1' to add a new purchase record.");
+        System.out.println("Press '2' to display purchase records entered.");
+        System.out.println("Press '3' to download purchase records from a file.");
+        System.out.println("Press '4' to save purchase records to a file.");
+        System.out.println("Press '5' to exit the program.");
+    }
+
+    public double sumItemTotals() {
+        double sumItemTotals = 0.0;
+        for (PurchaseRecord record : purchaseRecords) {
+            sumItemTotals += record.itemTotal;
+        }
+        return sumItemTotals; 
+    }
+
+    void save() {
+        String newRecord = "";
+
+        for (PurchaseRecord record : purchaseRecords) {
+            newRecord += record.getName() + "\n";
+            newRecord += record.getPrice() + "\n";
+            newRecord += record.getQuantity() + "\n";
+            newRecord += record.getItemTotal() + "\n";
+            newRecord += record.getPurchaseTotal() + "\n";
         }
         try {
             FileOutputStream outputStream = new FileOutputStream("purchase_record.txt", true);
-            outputStream.write(newPurchaseRecord.getBytes());
+            outputStream.write(newRecord.getBytes());
+            System.out.println("\nSaving to purchase_record.txt.\n");
             outputStream.close();
-        } catch (Exception exception) {
-            System.out.println("Upload error: ");
-            exception.getStackTrace();
-        }
+        } catch (Exception e) {
+            System.out.println("\nSave error: ");
+            e.printStackTrace();
+        }   
     }
 
-    void download(){
+    void load() {
         try {
             FileInputStream inputStream = new FileInputStream("purchase_record.txt");
             int inputReader = inputStream.read();
-            String purchaseRecords = "";
+            String record = "";
             while (inputReader != -1) {
-                purchaseRecords += (char)inputReader;
+                record += (char)inputReader;
                 inputReader = inputStream.read();
             }
-            String[] purchaseRecord = purchaseRecords.split("\n");
+            String[] purchaseRecordRead = record.split("\n");
+            int recordSize = 5;
             int i = 0;
-            System.out.println("Purchase records downloaded: " + purchaseRecord.length/4 + "\n");
-            while (i <  purchaseRecord.length) {
-                String name = purchaseRecord[i];
-                String inputPrice = purchaseRecord[i+1];
-                String inputQuantity = purchaseRecord[i+2];
-                String inputTotal = purchaseRecord[i+3];
-                price = Double.parseDouble(inputPrice);
-                quantity = Integer.parseInt(inputQuantity);
-                total = Double.parseDouble(inputTotal);
-                addPurchase(new PurchaseRecord(name, price, quantity, total));
-                System.out.println("Record " + (i/4+1) + "\nItem: " + name + "\nPrice: " + price + "\nQuantity: " + quantity + "\nPurchase Total: " + total + "\n");
-                i+=4;
+            while (i <  purchaseRecordRead.length) {
+                String name = purchaseRecordRead[i];
+                String inputPrice = purchaseRecordRead[i+1];
+                String inputQuantity = purchaseRecordRead[i+2];
+                String inputItemTotal = purchaseRecordRead[i+3];
+                String inputPurchaseTotal = purchaseRecordRead[i+4];
+                double price = Double.parseDouble(inputPrice);
+                int quantity = Integer.parseInt(inputQuantity);
+                double itemTotal = Double.parseDouble(inputItemTotal);
+                double purchaseTotal = Double.parseDouble(inputPurchaseTotal);
+                addPurchase(new PurchaseRecord(name, price, quantity, itemTotal, purchaseTotal));
+                System.out.println("\nRecord " + (i/recordSize+1) + "\nItem: " + name + "\nPrice: " + price + 
+                    "\nQuantity: " + quantity + "\nSub Total: " + itemTotal + "\nPurchase Total: " + purchaseTotal + "\n");
+                i+=recordSize;
             }
+            System.out.println("Purchase records downloaded: " + purchaseRecordRead.length/recordSize + "\n");
             inputStream.close();
-        } catch (Exception exception) {
-            System.out.println("Download error");
-            exception.getStackTrace();
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("\nDownload error: File not found\n");
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            System.out.println("\nDownload error: io exception\n");
+            e.printStackTrace();
         }
     }
 
-    public static void displayUserMenu(){
-        System.out.println("Press '1' to add a new purchase record.");
-        System.out.println("Press '2' to display purchase records entered.");
-        System.out.println("Press '3' to download purchase records from a file.");
-        System.out.println("Press '4' to exit the program.");
-    }
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        PurchaseRecord purchase = new PurchaseRecord();
+
+        PurchaseRecord record = new PurchaseRecord();
         int userOption = 0;
+
         do{
             displayUserMenu();
             userOption = Integer.parseInt(sc.nextLine());
             if (userOption == 1) {
-                System.out.print("Enter item name: ");
-                String name = sc.nextLine();
+                System.out.print("\nEnter item name: ");
+                record.name = sc.nextLine();
                 System.out.print("Enter price: ");
-                double price = sc.nextDouble();
-                System.out.print("Enter the amount: ");
-                int quanitity = sc.nextInt();
+                record.price = sc.nextDouble();
+                System.out.print("Enter amount: ");
+                record.quantity = sc.nextInt();
                 sc.nextLine();
-                double purchaseTotal = price * (double)quanitity;
-                System.out.println("Purchase Total: " + purchaseTotal + "\n");
-                purchase.addPurchase(new PurchaseRecord(name, price, quanitity, purchaseTotal));
-                purchase.upload();
+                record.itemTotal = record.price * (double)record.quantity;
+                System.out.println("Sub Total: " + record.itemTotal + "\n");
+                record.addPurchase(new PurchaseRecord(record.name, record.price, record.quantity, record.itemTotal, record.purchaseTotal));
+                record.purchaseTotal = record.sumItemTotals();
+                System.out.println("Purchase Total: " + record.purchaseTotal + "\n");
                 } 
             else if (userOption == 2) {
-                purchase.displayPurchaseRecords();
+                record.displayPurchaseRecords();
                 } 
             else if ( userOption == 3 ) {
-                purchase.download();
+                record.load();
                 }
+            else if ( userOption == 4) {
+                record.save();
+            }
         }
-        while(userOption > 0 && userOption < 4);
+        while(userOption > 0 && userOption < 5);
 
         sc.close();
     }
-
 }
-/* 
-Question 1.  Also, display this 
-information and the current total cost on
-the screen. After all items have been entered, write the total cost to both the screen and the file. Since
-we want to remember all purchases made, you should append new data to the end of the file.
-Submission: Run this program 2 – 3 times. Store the record of the purchases in the text file. Submit a
-java file and a text file to the D2L.
-
-Question 2:
-Suppose you are given a text file that contains the names of people. Every name in the file consists of
-first name and last name. Unfortunately, the programmer who created the file of names had a strange
-sense of humor and did not guarantee that each name was on a single line of the file. Read the file of
-names and write them to a new text file, one name per line. For example, if the input file contains
-Bon Jones Fred
-Charles Ed
-Marston
-Jeff
-Williams
-The output file should be
-Bon Jones
-Fred Charles
-Ed Marston
-Jeff Williams
-Submission: Submit a java file and input text file to the D2L.
-Rubric:
-Submission of input text file (1 marks)
-Submission of java file (1 marks)
-Correct output file produced (6)
-For each of the question, you should handle exception. For example, if files not does exist, your program
-should generate an exception. (4 marks)*/
