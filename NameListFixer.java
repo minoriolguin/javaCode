@@ -6,8 +6,8 @@ class NameListFixer {
     private String lastName;
 
     public NameListFixer() {
-        firstName = "first name";
-        lastName = "last name";
+        firstName = "first";
+        lastName = "last";
     }
 
     public NameListFixer(String firstName, String lastName) {

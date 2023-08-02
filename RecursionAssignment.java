@@ -1,18 +1,15 @@
-import java.util.Scanner;
+// import java.util.Scanner;
 
 public class RecursionAssignment{
 
-/* 
-- addDigits that takes an int as an argument and returns the sum of the digits in the argument.
-You may assume that the number provided is positive. For example, 12345 result in the
-computation 1 + 2 + 3 + 4 + 5 = 15. Do not use the classes Math, String or StringBuilder in your
-solution 
-*/ 
     public static int addDigits(int digit){
-        if (digit >= 0){
-
-        }
-        return digit;
+        int n = 0;
+        if (digit <= 0) return 0;
+        else {
+            n = digit % 10;
+            digit = digit/10;
+            }
+        return n + addDigits(digit);
     }
 
 /* - sumEvenNumbers that takes one int as an argument. Calculate the sum of the numbers
@@ -43,17 +40,9 @@ vowels removed. For simplicity: assume that the letter ‘y’ is never a vowel.
 removeVowels(“HelloYou”) should return “HllY”.*/
 
     public static void main(String[] args){
-        Scanner sc = new Scanner(System.in);
 
-
-        System.out.print("Enter a digit 0 or greater: ");
-        System.out.println(addDigits(sc.nextInt()));
-
-
-
-
-        sc.close();
+        System.out.println("\nAdding digits using recursion 12345: " + addDigits(12345) + "\n");
+    
+    
     }
-        
-
 }

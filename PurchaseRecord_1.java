@@ -120,7 +120,7 @@ class PurchaseRecord{
                 double price = Double.parseDouble(inputPrice);
                 int quantity = Integer.parseInt(inputQuantity);
                 double total = Double.parseDouble(inputTotal);
-                addPurchase(new PurchaseRecord(name, price, quantity, total));
+                addPurchase(new PurchaseRecord(name, price, quantity));
                 System.out.println("Record " + (i/4+1) + "\nItem: " + name + "\nPrice: " + price + "\nQuantity: " + quantity + "\nPurchase Total: " + total + "\n");
                 i+=4;
             }
@@ -156,7 +156,7 @@ class PurchaseRecord{
                 sc.nextLine();
                 double purchaseTotal = price * (double)quanitity;
                 System.out.println("Purchase Total: " + purchaseTotal + "\n");
-                purchase.addPurchase(new PurchaseRecord(name, price, quanitity, purchaseTotal));
+                purchase.addPurchase(new PurchaseRecord(name, price, quanitity));
                 purchase.upload();
                 } 
             else if (userOption == 2) {
