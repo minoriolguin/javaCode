@@ -1,48 +1,60 @@
-// import java.util.Scanner;
-
 public class RecursionAssignment{
 
+    // takes int digit as argument, adds the individual digits of digit
     public static int addDigits(int digit){
-        int n = 0;
-        if (digit <= 0) return 0;
+        if (digit == 0) return 0;
+        return digit%10 + addDigits(digit/10);
+    }
+
+    // sums all the even numbers including the number entered
+    public static int sumEvenNumbers(int number) {
+        if (number == 0) return 0;
+        else if (number % 2 != 0) return sumEvenNumbers(number-1);
         else {
-            n = digit % 10;
-            digit = digit/10;
+            return number + sumEvenNumbers(number - 2);
+        }
+    }
+
+    // counts number of vowels in a string, returns number of vowels, not including 'y'
+    public static int countVowels(String inputString){
+        String string = inputString.toLowerCase();
+        if (string.length() == 0) return 0;
+        if (string.charAt(0) == 'a' || string.charAt(0) == 'e' || string.charAt(0) == 'i'
+            || string.charAt(0) == 'o' || string.charAt(0) == 'u') {
+            return 1 + countVowels(string.substring(1));
             }
-        return n + addDigits(digit);
+        return countVowels(string.substring(1));
     }
 
-/* - sumEvenNumbers that takes one int as an argument. Calculate the sum of the numbers
-between 0 and the argument (inclusive) which are even. For example, sumEvenNumbers(16)
-should return 0 + 2 + 4 + 6 + 8 + 10 + 12 + 14 + 16. Remember: if a number x is even, then x % 2
-is zero. Your computation should explicitly add the required numbers together, do not use
-another mathematical formula to compute this number. (And, of course, this should be done
-recursively.) 
-*/
+    //takes a string as input and returns the string without vowels, with 'y' not being counted as a vowel
+    public static String removeVowels(String string) {
+        if (string.length() == 0) return "";
+        if (string.charAt(0) == 'a' || string.charAt(0) == 'e' || string.charAt(0) == 'i'
+            || string.charAt(0) == 'o' || string.charAt(0) == 'u' || string.charAt(0) == 'A' 
+            || string.charAt(0) == 'E' || string.charAt(0) == 'I' || string.charAt(0) == 'O' 
+            || string.charAt(0) == 'U') {
 
-    public int sumEvenNumbers(int evenNumber){
-  
-        return evenNumber;
+            return removeVowels(string.substring(1));
+            }
+        else {
+            String newString = "" + string.charAt(0);
+            return newString + removeVowels(string.substring(1));
+        }
     }
 
-/*
-- countVowels that takes a String as arguments and returns, as an int, the number of vowels in
-the String. For example, when passing “Mississippi” to countVowels the method should return 4
- */
-    public int countVowels(String phrase){
-        int noOfVowels = 0;
-        return noOfVowels; //must be changed
-    }
+    public static void main(String[] args) {
 
-/*         For simplicity: assume that the letter ‘y’ is never a vowel
-- removeVowels that takes on String as an argument and returns the same string but with the
-vowels removed. For simplicity: assume that the letter ‘y’ is never a vowel. For example,
-removeVowels(“HelloYou”) should return “HllY”.*/
+        int digit = 123456;
+        System.out.println("\nAdding digits using recursion " + digit + ": " + addDigits(digit));
 
-    public static void main(String[] args){
+        int number = 12;
+        System.out.println("\nThe sum of all even numbers up to and including " + number + " is:  " + sumEvenNumbers(number));
+        
+        String string = "Hello Everyone";
+        System.out.println("\nCounting the vowels in the string '" + string + "': " + countVowels(string));
 
-        System.out.println("\nAdding digits using recursion 12345: " + addDigits(12345) + "\n");
-    
-    
+        String string2 = "This string will have no vowels";
+        System.out.println("\nRemoving the vowels from the string, '" + string2 + "'\n\nNew string without vowels: " + removeVowels(string2) + "\n");
+
     }
 }
